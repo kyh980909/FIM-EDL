@@ -53,5 +53,5 @@ logging:
   local_dir: runs
   wandb:
     project: info-edl-repro
-    mode: offline
+    mode: online
     tags: [info-edl, repro]
