@@ -1,0 +1,52 @@
+defaults:
+  - experiment: info_edl
+  - _self_
+
+seed: 0
+checkpoint: ""
+
+experiment:
+  name: info_edl
+
+model:
+  backbone: resnet18
+  head: edl
+  num_classes: 10
+  pretrained: false
+  evidence_fn: softplus
+
+loss:
+  name: info_edl
+  lambda_value: 1.0
+  beta: 1.0
+  gamma: 1.0
+
+score:
+  name: vacuity
+
+data:
+  root: ./data
+  id: cifar10
+  ood_list: [svhn, cifar100]
+  batch_size: 128
+  num_workers: 4
+
+optimizer:
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+
+trainer:
+  max_epochs: 200
+  accelerator: auto
+  devices: 1
+  precision: 16-mixed
+  log_every_n_steps: 50
+
+logging:
+  backend: wandb
+  local_dir: runs
+  wandb:
+    project: info-edl-repro
+    mode: offline
+    tags: [info-edl, repro]

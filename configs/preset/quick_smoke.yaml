@@ -1,0 +1,4 @@
+methods: [edl_l1, info_edl]
+seeds: [0]
+run_eval: false
+build_artifacts: false

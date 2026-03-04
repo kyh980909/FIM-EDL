@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "info-edl-repro"
+version = "0.1.0"
+description = "Info-EDL reproduction platform with extensible architecture"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.1",
+  "torchvision>=0.16",
+  "pytorch-lightning>=2.2",
+  "hydra-core>=1.3",
+  "omegaconf>=2.3",
+  "torchmetrics>=1.3",
+  "scikit-learn>=1.4",
+  "numpy>=1.26",
+  "matplotlib>=3.8",
+  "pandas>=2.2",
+  "PyYAML>=6.0",
+  "wandb>=0.17"
+]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

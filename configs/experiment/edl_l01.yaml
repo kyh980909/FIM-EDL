@@ -1,0 +1,8 @@
+experiment:
+  name: edl_l01
+
+loss:
+  name: edl_fixed
+  lambda_value: 0.1
+  beta: 1.0
+  gamma: 1.0

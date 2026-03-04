@@ -1,0 +1,4 @@
+methods: [edl_l1, edl_l01, info_edl]
+seeds: [0, 1, 2, 3, 4]
+run_eval: true
+build_artifacts: true

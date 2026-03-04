@@ -1,0 +1,13 @@
+version: v1
+required_fields:
+  - results_schema_version
+  - method
+  - seed
+  - dataset
+  - split
+  - metrics
+  - config_hash
+  - git_commit
+optional_fields:
+  - step
+  - extra
