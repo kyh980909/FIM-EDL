@@ -30,7 +30,9 @@ from src.registry.scores import SCORE_REGISTRY
 class InfoEDLLightningModule(pl.LightningModule):
     def __init__(self, cfg) -> None:
         super().__init__()
-        self.save_hyperparameters()
+        # Avoid serializing OmegaConf DictConfig into checkpoints (PyTorch 2.6
+        # weights_only load blocks unknown globals by default).
+        self.save_hyperparameters(ignore=["cfg"])
         self.cfg = cfg
 
         backbone_cls = BACKBONE_REGISTRY.get(cfg.model.backbone)

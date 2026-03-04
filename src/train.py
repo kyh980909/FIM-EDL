@@ -4,7 +4,10 @@ from pathlib import Path
 
 import hydra
 import pytorch_lightning as pl
+import torch
 from omegaconf import DictConfig, OmegaConf
+from omegaconf.dictconfig import DictConfig as OmegaDictConfig
+from omegaconf.listconfig import ListConfig as OmegaListConfig
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, WandbLogger
 
@@ -43,10 +46,16 @@ def _build_logger(cfg: DictConfig):
         return logger
     return CSVLogger(save_dir=cfg.logging.local_dir, name=cfg.experiment.name)
 
+def _enable_checkpoint_safe_globals() -> None:
+    # Compatibility for checkpoints containing OmegaConf classes.
+    if hasattr(torch.serialization, "add_safe_globals"):
+        torch.serialization.add_safe_globals([OmegaDictConfig, OmegaListConfig])
+
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
     pl.seed_everything(cfg.seed, workers=True)
+    _enable_checkpoint_safe_globals()
     validate_registry_bindings(cfg)
 
     collector = LocalCollector(cfg)

@@ -8,12 +8,18 @@ import numpy as np
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
+from omegaconf.dictconfig import DictConfig as OmegaDictConfig
+from omegaconf.listconfig import ListConfig as OmegaListConfig
 
 from src.data.datamodule import InfoEDLDataModule
 from src.metrics.ood_metrics import auroc_and_fpr95
 from src.models.lit_module import InfoEDLLightningModule
 from src.reporting.collector import LocalCollector
 from src.reporting.wandb_import import import_wandb
+
+def _enable_checkpoint_safe_globals() -> None:
+    if hasattr(torch.serialization, "add_safe_globals"):
+        torch.serialization.add_safe_globals([OmegaDictConfig, OmegaListConfig])
 
 
 def _collect_scores(model: InfoEDLLightningModule, loader) -> Tuple[np.ndarray, np.ndarray]:
@@ -32,6 +38,7 @@ def _collect_scores(model: InfoEDLLightningModule, loader) -> Tuple[np.ndarray, 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
     pl.seed_everything(cfg.seed, workers=True)
+    _enable_checkpoint_safe_globals()
     collector = LocalCollector(cfg)
 
     datamodule = InfoEDLDataModule(cfg)
