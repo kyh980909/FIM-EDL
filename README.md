@@ -9,6 +9,17 @@ pip install -e .
 python run.py preset quick_smoke
 ```
 
+## Hyperparameter Baseline
+
+Default training hyperparameters are aligned with the Fisher-EDL CIFAR setup
+from `https://github.com/kyh980909/Fisher-EDL`:
+- `epochs=100`
+- `optimizer=adam`
+- `lr=1e-3`
+- `weight_decay=0.0`
+- `batch_size=128`
+- `num_workers=2`
+
 ## Core Repro
 
 ```bash

@@ -104,11 +104,33 @@ class InfoEDLLightningModule(pl.LightningModule):
         return out["uncertainty_score"]
 
     def configure_optimizers(self):
-        optim = torch.optim.SGD(
-            self.parameters(),
-            lr=self.cfg.optimizer.lr,
-            momentum=self.cfg.optimizer.momentum,
-            weight_decay=self.cfg.optimizer.weight_decay,
-        )
-        sched = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=self.cfg.trainer.max_epochs)
-        return {"optimizer": optim, "lr_scheduler": sched}
+        opt_name = str(self.cfg.optimizer.name).lower()
+        if opt_name == "adam":
+            optim = torch.optim.Adam(
+                self.parameters(),
+                lr=self.cfg.optimizer.lr,
+                weight_decay=self.cfg.optimizer.weight_decay,
+            )
+        elif opt_name == "adamw":
+            optim = torch.optim.AdamW(
+                self.parameters(),
+                lr=self.cfg.optimizer.lr,
+                weight_decay=self.cfg.optimizer.weight_decay,
+            )
+        elif opt_name == "sgd":
+            optim = torch.optim.SGD(
+                self.parameters(),
+                lr=self.cfg.optimizer.lr,
+                momentum=self.cfg.optimizer.momentum,
+                weight_decay=self.cfg.optimizer.weight_decay,
+            )
+        else:
+            raise ValueError(f"Unsupported optimizer.name: {self.cfg.optimizer.name}")
+
+        sched_name = str(self.cfg.scheduler.name).lower()
+        if sched_name == "none":
+            return {"optimizer": optim}
+        if sched_name == "cosine":
+            sched = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=self.cfg.trainer.max_epochs)
+            return {"optimizer": optim, "lr_scheduler": sched}
+        raise ValueError(f"Unsupported scheduler.name: {self.cfg.scheduler.name}")

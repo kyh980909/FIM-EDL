@@ -29,15 +29,20 @@ data:
   id: cifar10
   ood_list: [svhn, cifar100]
   batch_size: 128
-  num_workers: 4
+  num_workers: 2
 
 optimizer:
-  lr: 0.1
+  name: adam
+  lr: 0.001
   momentum: 0.9
-  weight_decay: 0.0005
+  weight_decay: 0.0
+
+scheduler:
+  name: none
+  warmup_epochs: 0
 
 trainer:
-  max_epochs: 200
+  max_epochs: 100
   accelerator: auto
   devices: 1
   precision: 16-mixed

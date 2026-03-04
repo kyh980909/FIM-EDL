@@ -6,3 +6,4 @@ runs/
 artifacts/
 wandb/
 .pytest_cache/
+*.pdf
