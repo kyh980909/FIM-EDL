@@ -13,6 +13,7 @@ from src.data.datamodule import InfoEDLDataModule
 from src.metrics.ood_metrics import auroc_and_fpr95
 from src.models.lit_module import InfoEDLLightningModule
 from src.reporting.collector import LocalCollector
+from src.reporting.wandb_import import import_wandb
 
 
 def _collect_scores(model: InfoEDLLightningModule, loader) -> Tuple[np.ndarray, np.ndarray]:
@@ -54,9 +55,12 @@ def main(cfg: DictConfig) -> None:
             pred_correct.append((pred == y.numpy()).astype(np.float32))
     accuracy = float(np.concatenate(pred_correct).mean())
 
+    rows: List[Dict[str, float]] = []
     for name, loader in datamodule.ood_dataloaders().items():
         ood_scores, _ = _collect_scores(model, loader)
         auroc, fpr95, meta = auroc_and_fpr95(id_scores=id_scores, ood_scores=ood_scores)
+        row = {"dataset": name, "acc": accuracy, "auroc": auroc, "fpr95": fpr95}
+        rows.append(row)
         collector.append_metric(
             method=cfg.experiment.name,
             seed=cfg.seed,
@@ -65,6 +69,38 @@ def main(cfg: DictConfig) -> None:
             metrics={"accuracy": accuracy, "auroc": auroc, "fpr95": fpr95},
             extra={"threshold_meta": meta},
         )
+
+    if cfg.logging.backend == "wandb":
+        wandb = import_wandb(".")
+        run = wandb.init(
+            project=cfg.logging.wandb.project,
+            name=f"{cfg.experiment.name}_seed{cfg.seed}_eval",
+            config={
+                "ckpt": str(Path(ckpt_path).resolve()),
+                "seed": int(cfg.seed),
+                "id_dataset": str(cfg.data.id),
+                "ood_datasets": ",".join(cfg.data.ood_list),
+                "score_type": str(cfg.score.name),
+                "calibration": "none",
+            },
+            mode=cfg.logging.wandb.mode,
+            tags=list(cfg.logging.wandb.tags) + ["eval"],
+            reinit=True,
+        )
+        for row in rows:
+            prefix = f"eval/{row['dataset']}"
+            run.log(
+                {
+                    f"{prefix}/acc": row["acc"],
+                    f"{prefix}/nll": float("nan"),
+                    f"{prefix}/ece": float("nan"),
+                    f"{prefix}/auroc": row["auroc"],
+                    f"{prefix}/aupr": float("nan"),
+                    f"{prefix}/fpr95": row["fpr95"],
+                    f"{prefix}/aurc": float("nan"),
+                }
+            )
+        run.finish()
 
     collector.write_summary(
         {

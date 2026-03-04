@@ -46,6 +46,14 @@ class EDLFixedLoss(nn.Module):
             "total": total,
             "fit": fit,
             "reg": reg,
-            "aux": {"lambda_mean": float(self.lam), "lambda_min": float(self.lam), "lambda_max": float(self.lam)},
+            "aux": {
+                "lambda_mean": float(self.lam),
+                "lambda_min": float(self.lam),
+                "lambda_max": float(self.lam),
+                "lambda_std": 0.0,
+                "info": float("nan"),
+                "info_std": float("nan"),
+                "fisher_trace": float("nan"),
+            },
             "schema_version": LOSS_SCHEMA_VERSION,
         }

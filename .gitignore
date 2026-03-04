@@ -7,3 +7,5 @@ artifacts/
 wandb/
 .pytest_cache/
 *.pdf
+*.egg-info/
+outputs/

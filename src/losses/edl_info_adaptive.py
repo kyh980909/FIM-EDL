@@ -38,7 +38,11 @@ class EDLInfoAdaptiveLoss(nn.Module):
                 "lambda_mean": float(lam.mean().item()),
                 "lambda_min": float(lam.min().item()),
                 "lambda_max": float(lam.max().item()),
+                "lambda_std": float(lam.std(unbiased=False).item()),
+                "info": float(v.mean().item()),
+                "info_std": float(v.std(unbiased=False).item()),
                 "fim_trace_mean": float(v.mean().item()),
+                "fisher_trace": float(v.mean().item()),
             },
             "schema_version": LOSS_SCHEMA_VERSION,
         }

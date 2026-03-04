@@ -20,6 +20,10 @@ loss:
   lambda_value: 1.0
   beta: 1.0
   gamma: 1.0
+  info_type: fisher
+  gate_type: exp
+  detach_weight: false
+  objective: risk_plus_kl
 
 score:
   name: vacuity

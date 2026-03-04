@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import Any, Dict
 
 import pytorch_lightning as pl
@@ -56,6 +57,8 @@ class InfoEDLLightningModule(pl.LightningModule):
             raise TypeError("score function must be callable")
 
         self._shape_checked = False
+        self._last_grad_norm = torch.tensor(float("nan"))
+        self._epoch_start_time = None
 
     def forward(self, x: Tensor) -> Dict[str, Tensor]:
         feat = self.backbone(x)
@@ -80,6 +83,25 @@ class InfoEDLLightningModule(pl.LightningModule):
         loss_out = self.loss_fn(out["alpha"], y)
         pred = out["probs"].argmax(dim=1)
         acc = (pred == y).float().mean()
+        uncertainty = out["uncertainty_score"]
+        correct_mask = pred == y
+        wrong_mask = ~correct_mask
+        unc_correct = (
+            uncertainty[correct_mask].mean() if correct_mask.any() else torch.tensor(float("nan"), device=x.device)
+        )
+        unc_wrong = (
+            uncertainty[wrong_mask].mean() if wrong_mask.any() else torch.tensor(float("nan"), device=x.device)
+        )
+        evidence_sum = (out["alpha"].sum(dim=1) - self.cfg.model.num_classes).mean()
+
+        lambda_mean = float(loss_out["aux"].get("lambda_mean", float("nan")))
+        lambda_std = float(loss_out["aux"].get("lambda_std", float("nan")))
+        lambda_min = float(loss_out["aux"].get("lambda_min", float("nan")))
+        lambda_max = float(loss_out["aux"].get("lambda_max", float("nan")))
+        info = float(loss_out["aux"].get("info", float("nan")))
+        info_std = float(loss_out["aux"].get("info_std", float("nan")))
+        fisher_trace = float(loss_out["aux"].get("fisher_trace", float("nan")))
+        kl_weighted = loss_out["reg"] * lambda_mean
 
         self.log(f"{stage}/loss", loss_out["total"], prog_bar=(stage != "train"), on_epoch=True)
         self.log(f"{stage}/fit", loss_out["fit"], on_epoch=True)
@@ -87,6 +109,28 @@ class InfoEDLLightningModule(pl.LightningModule):
         self.log(f"{stage}/acc", acc, prog_bar=True, on_epoch=True)
         for key, value in loss_out["aux"].items():
             self.log(f"{stage}/aux/{key}", value, on_epoch=True)
+
+        if stage == "train":
+            self.log("Loss/Total", loss_out["total"], on_epoch=True, prog_bar=True)
+            self.log("Loss/Risk", loss_out["fit"], on_epoch=True)
+            self.log("Loss/KL_raw", loss_out["reg"], on_epoch=True)
+            self.log("Loss/KL_weighted", kl_weighted, on_epoch=True)
+            self.log("Metric/Info", info, on_epoch=True)
+            self.log("Metric/Info_Std", info_std, on_epoch=True)
+            self.log("Metric/Fisher_Trace", fisher_trace, on_epoch=True)
+            self.log("Metric/Lambda_Mean", lambda_mean, on_epoch=True)
+            self.log("Metric/Lambda_Std", lambda_std, on_epoch=True)
+            self.log("Metric/Lambda_Min", lambda_min, on_epoch=True)
+            self.log("Metric/Lambda_Max", lambda_max, on_epoch=True)
+            self.log("Uncertainty/Train_Mean", uncertainty.mean(), on_epoch=True)
+            self.log("Uncertainty/Correct", unc_correct, on_epoch=True)
+            self.log("Uncertainty/Wrong", unc_wrong, on_epoch=True)
+            self.log("Evidence/Total_Sum", evidence_sum, on_epoch=True)
+            self.log("train_acc", acc, on_epoch=True, prog_bar=True)
+        elif stage == "val":
+            self.log("val_acc", acc, on_epoch=True, prog_bar=True)
+            self.log("val_uncertainty", uncertainty.mean(), on_epoch=True)
+            self.log("val_fisher_weight", lambda_mean, on_epoch=True)
         return loss_out["total"]
 
     def training_step(self, batch: Any, batch_idx: int) -> Tensor:
@@ -97,6 +141,31 @@ class InfoEDLLightningModule(pl.LightningModule):
 
     def test_step(self, batch: Any, batch_idx: int) -> Tensor:
         return self._common_step(batch, "test")
+
+    def on_after_backward(self) -> None:
+        grad_sq = 0.0
+        for param in self.parameters():
+            if param.grad is not None:
+                grad_sq += float(param.grad.detach().norm(2).item() ** 2)
+        self._last_grad_norm = torch.tensor(grad_sq**0.5, device=self.device)
+
+    def on_train_epoch_start(self) -> None:
+        self._epoch_start_time = time.perf_counter()
+
+    def on_train_epoch_end(self) -> None:
+        epoch_time = float("nan")
+        if self._epoch_start_time is not None:
+            epoch_time = time.perf_counter() - self._epoch_start_time
+        self.log("System/Epoch_Time_sec", epoch_time, on_epoch=True)
+        self.log("System/Gradient_Norm", self._last_grad_norm, on_epoch=True)
+        self.log("epoch", float(self.current_epoch + 1), on_epoch=True)
+        optim = self.optimizers()
+        if isinstance(optim, list):
+            optim = optim[0] if optim else None
+        if hasattr(optim, "optimizer"):
+            optim = optim.optimizer
+        if optim is not None:
+            self.log("lr", float(optim.param_groups[0]["lr"]), on_epoch=True)
 
     def predict_scores(self, batch: Any) -> Tensor:
         x, _ = batch

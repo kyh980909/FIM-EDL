@@ -16,7 +16,7 @@ from src.reporting.collector import LocalCollector
 
 def _build_logger(cfg: DictConfig):
     if cfg.logging.backend == "wandb":
-        return WandbLogger(
+        logger = WandbLogger(
             project=cfg.logging.wandb.project,
             group=cfg.experiment.name,
             name=f"{cfg.experiment.name}_seed{cfg.seed}",
@@ -24,6 +24,23 @@ def _build_logger(cfg: DictConfig):
             mode=cfg.logging.wandb.mode,
             tags=list(cfg.logging.wandb.tags),
         )
+        method = "fisher" if str(cfg.loss.name) == "info_edl" else "edl"
+        logger.experiment.config.update(
+            {
+                "method": method,
+                "epochs": int(cfg.trainer.max_epochs),
+                "lr": float(cfg.optimizer.lr),
+                "beta": float(cfg.loss.beta),
+                "gamma": float(cfg.loss.gamma),
+                "num_classes": int(cfg.model.num_classes),
+                "info_type": str(cfg.loss.info_type),
+                "gate_type": str(cfg.loss.gate_type),
+                "detach_weight": bool(cfg.loss.detach_weight),
+                "objective": str(cfg.loss.objective),
+            },
+            allow_val_change=True,
+        )
+        return logger
     return CSVLogger(save_dir=cfg.logging.local_dir, name=cfg.experiment.name)
 
 
