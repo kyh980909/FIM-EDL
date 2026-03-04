@@ -1,6 +1,6 @@
 defaults:
-  - experiment: info_edl
   - _self_
+  - experiment: info_edl
 
 seed: 0
 checkpoint: ""
