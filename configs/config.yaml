@@ -73,6 +73,6 @@ logging:
   backend: wandb
   local_dir: runs
   wandb:
-    project: info-edl-repro3
+    project: info-edl-extend
     mode: online
     tags: [info-edl, repro]

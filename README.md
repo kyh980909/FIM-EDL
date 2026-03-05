@@ -49,11 +49,21 @@ python run.py preset confirm_mnist
 # mini-ImageNet/CUB folder-based presets
 python run.py preset pilot_fewshot
 python run.py preset confirm_fewshot
+
+# I-EDL paper backbone presets
+python run.py preset paper_cifar_pilot
+python run.py preset paper_mnist_pilot
+python run.py preset paper_fewshot_pilot
 ```
 
 For mini-ImageNet/CUB, place image folders under:
 - `data/miniimagenet/{train,val,test}/<class>/*.jpg`
 - `data/cub/test/<class>/*.jpg`
+
+Paper-aligned backbones:
+- `vgg16` for CIFAR10 setting
+- `convnet` for MNIST setting
+- `wrn28_10` for few-shot setting
 
 ## Override Examples
 

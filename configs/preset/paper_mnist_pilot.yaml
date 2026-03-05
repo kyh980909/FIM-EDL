@@ -1,0 +1,9 @@
+methods: [edl_l1, edl_l01, edl_l0001, info_edl, iedl_ref]
+seeds: [0, 1]
+run_eval: true
+build_artifacts: true
+overrides:
+  - experiment.suite=mnist_paper
+  - model.backbone=convnet
+  - data.id=mnist
+  - data.ood_list=[kmnist,fashionmnist]

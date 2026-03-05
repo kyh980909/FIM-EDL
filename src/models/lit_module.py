@@ -9,6 +9,9 @@ from torch import Tensor, nn
 
 # Register components by import side effects.
 import src.models.backbones.resnet18  # noqa: F401
+import src.models.backbones.convnet  # noqa: F401
+import src.models.backbones.vgg16  # noqa: F401
+import src.models.backbones.wrn28_10  # noqa: F401
 import src.models.heads.edl_head  # noqa: F401
 import src.losses.edl_fixed  # noqa: F401
 import src.losses.edl_info_adaptive  # noqa: F401
