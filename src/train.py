@@ -39,14 +39,24 @@ def _build_logger(cfg: DictConfig):
             mode=cfg.logging.wandb.mode,
             tags=_wandb_tags(cfg),
         )
-        method = "fisher" if str(cfg.loss.name) == "info_edl" else "edl"
+        loss_name = str(cfg.loss.name)
+        if loss_name == "info_edl":
+            method = "info_edl"
+        elif loss_name == "iedl_ref":
+            method = "iedl_ref"
+        else:
+            method = "edl"
         logger.experiment.config.update(
             {
                 "method": method,
+                "method_variant": str(cfg.experiment.method_variant),
+                "suite": str(cfg.experiment.suite),
                 "epochs": int(cfg.trainer.max_epochs),
                 "lr": float(cfg.optimizer.lr),
                 "beta": float(cfg.loss.beta),
                 "gamma": float(cfg.loss.gamma),
+                "lambda_kl": float(cfg.loss.lambda_kl),
+                "lambda_logdet": float(cfg.loss.lambda_logdet),
                 "num_classes": int(cfg.model.num_classes),
                 "info_type": str(cfg.loss.info_type),
                 "gate_type": str(cfg.loss.gate_type),
@@ -103,6 +113,9 @@ def main(cfg: DictConfig) -> None:
         dataset=cfg.data.id,
         split="test",
         metrics={"accuracy": float(metrics.get("test/acc", 0.0))},
+        method_variant=str(cfg.experiment.method_variant),
+        score_type=str(cfg.score.name),
+        calibration_type=str(cfg.eval.calibration),
     )
     collector.write_summary(
         {

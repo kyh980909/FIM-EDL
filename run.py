@@ -32,10 +32,12 @@ def main() -> None:
     preset = load_preset(args.preset)
     methods = preset["methods"]
     seeds = preset["seeds"]
+    preset_overrides = list(preset.get("overrides", []))
+    merged_overrides = preset_overrides + list(args.overrides)
 
     for method in methods:
         for seed in seeds:
-            train_cmd = ["python", "-m", "src.train", f"experiment={method}", f"seed={seed}"] + args.overrides
+            train_cmd = ["python", "-m", "src.train", f"experiment={method}", f"seed={seed}"] + merged_overrides
             train_cmd[0] = sys.executable
             run_cmd(train_cmd)
 
@@ -55,10 +57,20 @@ def main() -> None:
                     f"experiment={method}",
                     f"seed={seed}",
                     f"checkpoint={ckpt}",
-                ] + args.overrides
+                ] + merged_overrides
                 run_cmd(eval_cmd)
 
     if preset.get("build_artifacts", True):
+        run_cmd(
+            [
+                sys.executable,
+                "scripts/paper/export_eval_results.py",
+                "--runs",
+                "runs",
+                "--out",
+                "results/eval",
+            ]
+        )
         run_cmd(
             [
                 sys.executable,

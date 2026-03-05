@@ -1,0 +1,15 @@
+# @package _global_
+
+experiment:
+  name: iedl_ref
+  suite: cifar_ood
+  method_variant: iedl_ref
+  wandb_tags: ["method:iedl_ref", "fisher:i_mse", "pac_bayes:kl"]
+
+loss:
+  name: iedl_ref
+  lambda_value: 1.0
+  beta: 1.0
+  gamma: 1.0
+  lambda_kl: 1.0
+  lambda_logdet: 0.01

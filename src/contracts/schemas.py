@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 
 LOSS_SCHEMA_VERSION = "v1"
-RESULTS_SCHEMA_VERSION = "v1"
+RESULTS_SCHEMA_VERSION = "v2"
 
 
 @dataclass
@@ -27,5 +27,8 @@ class MetricRecord:
     metrics: Dict[str, float]
     config_hash: str
     git_commit: str
+    method_variant: str = ""
+    score_type: str = ""
+    calibration_type: str = ""
     step: int | None = None
     extra: Dict[str, Any] = field(default_factory=dict)

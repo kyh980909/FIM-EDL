@@ -11,6 +11,9 @@ def migrate_file(path: Path, target_version: str) -> None:
     for line in lines:
         row = json.loads(line)
         row["results_schema_version"] = target_version
+        row.setdefault("method_variant", row.get("method", ""))
+        row.setdefault("score_type", "vacuity")
+        row.setdefault("calibration_type", "none")
         out.append(json.dumps(row))
     path.write_text("\n".join(out) + "\n", encoding="utf-8")
 

@@ -12,7 +12,10 @@ import src.models.backbones.resnet18  # noqa: F401
 import src.models.heads.edl_head  # noqa: F401
 import src.losses.edl_fixed  # noqa: F401
 import src.losses.edl_info_adaptive  # noqa: F401
+import src.losses.iedl_ref  # noqa: F401
 import src.scores.vacuity  # noqa: F401
+import src.scores.maxp  # noqa: F401
+import src.scores.alpha0  # noqa: F401
 
 from src.contracts.protocols import (
     BackboneProtocol,
@@ -50,6 +53,11 @@ class InfoEDLLightningModule(pl.LightningModule):
         loss_cls = LOSS_REGISTRY.get(cfg.loss.name)
         if cfg.loss.name == "edl_fixed":
             self.loss_fn: nn.Module = loss_cls(lam=cfg.loss.lambda_value)
+        elif cfg.loss.name == "iedl_ref":
+            self.loss_fn = loss_cls(
+                lambda_kl=cfg.loss.lambda_kl,
+                lambda_logdet=cfg.loss.lambda_logdet,
+            )
         else:
             self.loss_fn = loss_cls(beta=cfg.loss.beta, gamma=cfg.loss.gamma)
         assert_module_instance(self.loss_fn, LossProtocol, "loss")

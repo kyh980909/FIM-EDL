@@ -2,6 +2,8 @@
 
 experiment:
   name: edl_l01
+  suite: cifar_ood
+  method_variant: edl_fixed_l01
   wandb_tags: ["method:edl", "lambda:0.1"]
 
 loss:

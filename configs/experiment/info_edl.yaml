@@ -2,6 +2,8 @@
 
 experiment:
   name: info_edl
+  suite: cifar_ood
+  method_variant: info_edl
   wandb_tags: ["method:info_edl", "lambda:adaptive", "beta:1.0", "gamma:1.0"]
 
 loss:

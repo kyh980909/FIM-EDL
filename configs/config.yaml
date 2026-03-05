@@ -7,6 +7,8 @@ checkpoint: ""
 
 experiment:
   name: info_edl
+  suite: cifar_ood
+  method_variant: info_edl
   wandb_tags: []
 
 model:
@@ -21,6 +23,8 @@ loss:
   lambda_value: 1.0
   beta: 1.0
   gamma: 1.0
+  lambda_kl: 1.0
+  lambda_logdet: 0.01
   info_type: fisher
   gate_type: exp
   detach_weight: false
@@ -29,12 +33,24 @@ loss:
 score:
   name: vacuity
 
+eval:
+  scores: [maxp, alpha0, vacuity]
+  calibration: none
+  temperature: 1.0
+
 data:
   root: ./data
   id: cifar10
   ood_list: [svhn, cifar100]
   batch_size: 128
   num_workers: 2
+
+fewshot:
+  enabled: false
+  way: 5
+  shot: 1
+  episodes: 1000
+  ood_dataset: cub
 
 optimizer:
   name: adam

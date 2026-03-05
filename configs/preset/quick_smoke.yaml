@@ -1,4 +1,4 @@
-methods: [edl_l1, info_edl]
+methods: [edl_l0001, info_edl, iedl_ref]
 seeds: [0]
 run_eval: false
 build_artifacts: false

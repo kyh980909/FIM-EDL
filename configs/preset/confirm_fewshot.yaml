@@ -1,0 +1,12 @@
+methods: [edl_l0001, info_edl, iedl_ref]
+seeds: [0, 1, 2, 3, 4]
+run_eval: true
+build_artifacts: true
+overrides:
+  - data.id=miniimagenet
+  - data.ood_list=[cub]
+  - experiment.suite=fewshot_ood
+  - fewshot.enabled=true
+  - fewshot.way=5
+  - fewshot.shot=1
+  - fewshot.episodes=10000
