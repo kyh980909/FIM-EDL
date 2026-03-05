@@ -1,0 +1,8 @@
+{
+  "rows": 30,
+  "outputs": [
+    "results/eval/latest_eval_rows.csv",
+    "results/eval/summary_mean_std.csv",
+    "results/eval/summary.md"
+  ]
+}
