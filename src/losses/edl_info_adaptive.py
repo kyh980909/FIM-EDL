@@ -6,7 +6,7 @@ import torch
 from torch import Tensor, nn
 
 from src.contracts.schemas import LOSS_SCHEMA_VERSION
-from src.losses.edl_fixed import _edl_fit, _kl_dirichlet_to_uniform
+from src.losses.edl_fixed import _edl_fit_per_sample, _kl_dirichlet_to_uniform_per_sample
 from src.registry.losses import LOSS_REGISTRY
 
 
@@ -25,11 +25,13 @@ class EDLInfoAdaptiveLoss(nn.Module):
         self.gamma = gamma
 
     def forward(self, alpha: Tensor, target: Tensor, **kwargs: Any) -> Dict[str, Any]:
-        fit = _edl_fit(alpha, target)
-        reg = _kl_dirichlet_to_uniform(alpha)
+        fit_ps = _edl_fit_per_sample(alpha, target)
+        kl_ps = _kl_dirichlet_to_uniform_per_sample(alpha)
+        fit = fit_ps.mean()
+        reg = kl_ps.mean()
         v = _fisher_trace(alpha).detach()
         lam = self.beta * torch.exp(-self.gamma * v)
-        total = fit + lam.mean() * reg
+        total = fit + (lam * kl_ps).mean()
         return {
             "total": total,
             "fit": fit,

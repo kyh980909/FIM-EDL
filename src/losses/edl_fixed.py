@@ -10,16 +10,20 @@ from src.contracts.schemas import LOSS_SCHEMA_VERSION
 from src.registry.losses import LOSS_REGISTRY
 
 
-def _edl_fit(alpha: Tensor, target: Tensor) -> Tensor:
+def _edl_fit_per_sample(alpha: Tensor, target: Tensor) -> Tensor:
     s = alpha.sum(dim=1, keepdim=True)
     p = alpha / s
     y = F.one_hot(target, num_classes=alpha.size(1)).float()
     err = (y - p).pow(2)
     var = p * (1 - p) / (s + 1)
-    return (err + var).sum(dim=1).mean()
+    return (err + var).sum(dim=1)
 
 
-def _kl_dirichlet_to_uniform(alpha: Tensor) -> Tensor:
+def _edl_fit(alpha: Tensor, target: Tensor) -> Tensor:
+    return _edl_fit_per_sample(alpha, target).mean()
+
+
+def _kl_dirichlet_to_uniform_per_sample(alpha: Tensor) -> Tensor:
     k = alpha.size(1)
     sum_alpha = alpha.sum(dim=1, keepdim=True)
     ln_b = torch.lgamma(sum_alpha) - torch.lgamma(alpha).sum(dim=1, keepdim=True)
@@ -29,7 +33,11 @@ def _kl_dirichlet_to_uniform(alpha: Tensor) -> Tensor:
     digamma_sum = torch.digamma(sum_alpha)
     digamma_alpha = torch.digamma(alpha)
     kl = ((alpha - 1) * (digamma_alpha - digamma_sum)).sum(dim=1, keepdim=True) + ln_b + ln_b_uni
-    return kl.mean()
+    return kl.squeeze(1)
+
+
+def _kl_dirichlet_to_uniform(alpha: Tensor) -> Tensor:
+    return _kl_dirichlet_to_uniform_per_sample(alpha).mean()
 
 
 @LOSS_REGISTRY.register("edl_fixed")

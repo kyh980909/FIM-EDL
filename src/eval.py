@@ -17,6 +17,18 @@ from src.models.lit_module import InfoEDLLightningModule
 from src.reporting.collector import LocalCollector
 from src.reporting.wandb_import import import_wandb
 
+
+def _wandb_tags(cfg: DictConfig) -> list[str]:
+    base = list(cfg.logging.wandb.tags)
+    exp_tags = list(getattr(cfg.experiment, "wandb_tags", []))
+    auto = [f"experiment:{cfg.experiment.name}", f"loss:{cfg.loss.name}", "eval"]
+    out = []
+    for tag in base + exp_tags + auto:
+        if tag not in out:
+            out.append(tag)
+    return out
+
+
 def _enable_checkpoint_safe_globals() -> None:
     if hasattr(torch.serialization, "add_safe_globals"):
         torch.serialization.add_safe_globals([OmegaDictConfig, OmegaListConfig])
@@ -91,7 +103,7 @@ def main(cfg: DictConfig) -> None:
                 "calibration": "none",
             },
             mode=cfg.logging.wandb.mode,
-            tags=list(cfg.logging.wandb.tags) + ["eval"],
+            tags=_wandb_tags(cfg),
             reinit=True,
         )
         for row in rows:

@@ -2,6 +2,7 @@
 
 experiment:
   name: edl_l1
+  wandb_tags: ["method:edl", "lambda:1.0"]
 
 loss:
   name: edl_fixed

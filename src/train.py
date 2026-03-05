@@ -17,6 +17,18 @@ from src.registry.validators import validate_registry_bindings
 from src.reporting.collector import LocalCollector
 
 
+def _wandb_tags(cfg: DictConfig) -> list[str]:
+    base = list(cfg.logging.wandb.tags)
+    exp_tags = list(getattr(cfg.experiment, "wandb_tags", []))
+    auto = [f"experiment:{cfg.experiment.name}", f"loss:{cfg.loss.name}"]
+    # Keep order but remove duplicates.
+    out = []
+    for tag in base + exp_tags + auto:
+        if tag not in out:
+            out.append(tag)
+    return out
+
+
 def _build_logger(cfg: DictConfig):
     if cfg.logging.backend == "wandb":
         logger = WandbLogger(
@@ -25,7 +37,7 @@ def _build_logger(cfg: DictConfig):
             name=f"{cfg.experiment.name}_seed{cfg.seed}",
             save_dir=cfg.logging.local_dir,
             mode=cfg.logging.wandb.mode,
-            tags=list(cfg.logging.wandb.tags),
+            tags=_wandb_tags(cfg),
         )
         method = "fisher" if str(cfg.loss.name) == "info_edl" else "edl"
         logger.experiment.config.update(

@@ -7,6 +7,7 @@ checkpoint: ""
 
 experiment:
   name: info_edl
+  wandb_tags: []
 
 model:
   backbone: resnet18
@@ -56,6 +57,6 @@ logging:
   backend: wandb
   local_dir: runs
   wandb:
-    project: info-edl-repro2
+    project: info-edl-repro3
     mode: online
     tags: [info-edl, repro]

@@ -2,6 +2,7 @@
 
 experiment:
   name: info_edl
+  wandb_tags: ["method:info_edl", "lambda:adaptive", "beta:1.0", "gamma:1.0"]
 
 loss:
   name: info_edl
