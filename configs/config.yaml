@@ -25,6 +25,8 @@ loss:
   gamma: 1.0
   lambda_kl: 1.0
   lambda_logdet: 0.01
+  fisher_c: 0.05
+  kl_anneal_epochs: 10
   info_type: fisher
   gate_type: exp
   detach_weight: false

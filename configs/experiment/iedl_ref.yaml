@@ -11,5 +11,7 @@ loss:
   lambda_value: 1.0
   beta: 1.0
   gamma: 1.0
-  lambda_kl: 1.0
-  lambda_logdet: 0.01
+  lambda_kl: -1.0
+  lambda_logdet: 0.05
+  fisher_c: 0.05
+  kl_anneal_epochs: 10

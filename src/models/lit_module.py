@@ -59,6 +59,8 @@ class InfoEDLLightningModule(pl.LightningModule):
         elif cfg.loss.name == "iedl_ref":
             self.loss_fn = loss_cls(
                 lambda_kl=cfg.loss.lambda_kl,
+                fisher_c=cfg.loss.fisher_c,
+                kl_anneal_epochs=cfg.loss.kl_anneal_epochs,
                 lambda_logdet=cfg.loss.lambda_logdet,
             )
         else:
@@ -93,7 +95,7 @@ class InfoEDLLightningModule(pl.LightningModule):
         if not self._shape_checked:
             self._assert_shapes(batch, out)
             self._shape_checked = True
-        loss_out = self.loss_fn(out["alpha"], y)
+        loss_out = self.loss_fn(out["alpha"], y, epoch=float(self.current_epoch))
         pred = out["probs"].argmax(dim=1)
         acc = (pred == y).float().mean()
         uncertainty = out["uncertainty_score"]
