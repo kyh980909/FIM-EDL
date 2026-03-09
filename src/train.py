@@ -65,6 +65,7 @@ def _build_logger(cfg: DictConfig):
             "beta": _maybe_loss_value(cfg, "beta"),
             "gamma": _maybe_loss_value(cfg, "gamma"),
             "lambda_value": _maybe_loss_value(cfg, "lambda_value"),
+            "anneal_epochs": _maybe_loss_value(cfg, "anneal_epochs"),
             "lambda_kl": _maybe_loss_value(cfg, "lambda_kl"),
             "lambda_logdet": _maybe_loss_value(cfg, "lambda_logdet"),
             "fisher_c": _maybe_loss_value(cfg, "fisher_c"),

@@ -42,23 +42,33 @@ def _kl_dirichlet_to_uniform(alpha: Tensor) -> Tensor:
 
 @LOSS_REGISTRY.register("edl_fixed")
 class EDLFixedLoss(nn.Module):
-    def __init__(self, lam: float = 1.0) -> None:
+    def __init__(self, lam: float = 1.0, anneal_epochs: float = 10.0) -> None:
         super().__init__()
-        self.lam = lam
+        self.lam = float(lam)
+        self.anneal_epochs = float(anneal_epochs)
+
+    def _lambda_weight(self, epoch: float) -> float:
+        denom = max(self.anneal_epochs, 1e-6)
+        progress = min(1.0, max(float(epoch), 0.0) / denom)
+        return float(self.lam * progress)
 
     def forward(self, alpha: Tensor, target: Tensor, **kwargs: Any) -> Dict[str, Any]:
+        epoch = float(kwargs.get("epoch", 0.0))
+        lam = self._lambda_weight(epoch)
         fit = _edl_fit(alpha, target)
         reg = _kl_dirichlet_to_uniform(alpha)
-        total = fit + self.lam * reg
+        total = fit + lam * reg
         return {
             "total": total,
             "fit": fit,
             "reg": reg,
             "aux": {
-                "lambda_mean": float(self.lam),
-                "lambda_min": float(self.lam),
-                "lambda_max": float(self.lam),
+                "lambda_mean": float(lam),
+                "lambda_min": float(lam),
+                "lambda_max": float(lam),
                 "lambda_std": 0.0,
+                "lambda_target": float(self.lam),
+                "lambda_progress": float(min(1.0, max(epoch, 0.0) / max(self.anneal_epochs, 1e-6))),
                 "info": float("nan"),
                 "info_std": float("nan"),
                 "fisher_trace": float("nan"),

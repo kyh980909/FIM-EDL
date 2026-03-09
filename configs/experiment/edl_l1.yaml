@@ -9,3 +9,4 @@ experiment:
 loss:
   name: edl_fixed
   lambda_value: 1.0
+  anneal_epochs: 10

@@ -26,6 +26,7 @@ score:
 
 eval:
   scores: [maxp, alpha0, vacuity]
+  confidence_scores: [maxp, maxalpha]
   calibration: none
   temperature: 1.0
 
@@ -64,6 +65,6 @@ logging:
   backend: wandb
   local_dir: runs
   wandb:
-    project: info-edl-extend
+    project: FI-EDL
     mode: online
-    tags: [info-edl, repro]
+    tags: [fi-edl, repro]

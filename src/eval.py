@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from omegaconf import DictConfig
 from omegaconf.dictconfig import DictConfig as OmegaDictConfig
 from omegaconf.listconfig import ListConfig as OmegaListConfig
+from sklearn.metrics import average_precision_score
 
 from src.data.datamodule import InfoEDLDataModule
 from src.metrics.ood_metrics import (
@@ -72,8 +73,9 @@ def _collect_outputs(model: InfoEDLLightningModule, loader, temperature: float) 
 def _score_map(alpha: np.ndarray, probs: np.ndarray) -> Dict[str, np.ndarray]:
     alpha0 = alpha.sum(axis=1)
     maxp = probs.max(axis=1)
+    maxalpha = alpha.max(axis=1)
     vacuity = alpha.shape[1] / np.clip(alpha0, 1e-12, None)
-    return {"maxp": maxp, "alpha0": alpha0, "vacuity": vacuity}
+    return {"maxp": maxp, "maxalpha": maxalpha, "alpha0": alpha0, "vacuity": vacuity}
 
 
 def _ood_score_from_raw(score_name: str, raw: np.ndarray) -> np.ndarray:
@@ -81,6 +83,13 @@ def _ood_score_from_raw(score_name: str, raw: np.ndarray) -> np.ndarray:
     if score_name in {"maxp", "alpha0"}:
         return -raw
     return raw
+
+
+def _confidence_aupr(conf_scores: np.ndarray, correct: np.ndarray) -> float:
+    labels = correct.astype(np.int32)
+    if labels.min() == labels.max():
+        return float("nan")
+    return float(average_precision_score(labels, conf_scores))
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
@@ -110,6 +119,26 @@ def main(cfg: DictConfig) -> None:
     nll = multiclass_nll(id_out["probs"], id_out["labels"])
     ece = multiclass_ece(id_out["probs"], id_out["labels"])
     aurc = aurc_from_confidence(id_out["probs"].max(axis=1), id_correct)
+    for score_name in list(getattr(cfg.eval, "confidence_scores", ["maxp", "maxalpha"])):
+        if score_name not in id_scores_raw:
+            continue
+        conf_aupr = _confidence_aupr(id_scores_raw[score_name], id_correct)
+        collector.append_metric(
+            method=cfg.experiment.name,
+            seed=cfg.seed,
+            dataset=str(cfg.data.id),
+            split="conf_eval",
+            metrics={
+                "accuracy": accuracy,
+                "nll": nll,
+                "ece": ece,
+                "aurc": aurc,
+                "aupr": conf_aupr,
+            },
+            method_variant=str(cfg.experiment.method_variant),
+            score_type=score_name,
+            calibration_type=str(cfg.eval.calibration),
+        )
 
     rows: List[Dict[str, float]] = []
     for name, loader in datamodule.ood_dataloaders().items():

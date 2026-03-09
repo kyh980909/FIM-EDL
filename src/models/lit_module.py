@@ -36,7 +36,7 @@ from src.registry.scores import SCORE_REGISTRY
 def _loss_kwargs(cfg) -> Dict[str, Any]:
     loss_name = str(cfg.loss.name)
     if loss_name == "edl_fixed":
-        return {"lam": cfg.loss.lambda_value}
+        return {"lam": cfg.loss.lambda_value, "anneal_epochs": cfg.loss.anneal_epochs}
     if loss_name == "iedl_ref":
         return {
             "lambda_kl": cfg.loss.lambda_kl,

@@ -1,0 +1,17 @@
+methods: [edl_l0001, info_edl, iedl_ref]
+seeds: [0, 1, 2, 3, 4]
+run_eval: true
+build_artifacts: true
+overrides:
+  - experiment.suite=cifar10_paper_ref
+  - model.backbone=vgg16
+  - data.id=cifar10
+  - data.ood_list=[svhn,cifar100]
+  - model.num_classes=10
+  - trainer.max_epochs=200
+  - loss.anneal_epochs=200
+  - data.batch_size=64
+  - optimizer.lr=0.0005
+  - trainer.precision=32-true
+  - eval.confidence_scores=[maxp,maxalpha]
+  - logging.backend=csv

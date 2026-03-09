@@ -1,0 +1,7 @@
+method_key,display_name,source,mnist_to_kmnist_maxp,mnist_to_kmnist_alpha0,mnist_to_fmnist_maxp,mnist_to_fmnist_alpha0,cifar10_to_svhn_maxp,cifar10_to_svhn_alpha0,cifar10_to_cifar100_maxp,cifar10_to_cifar100_alpha0
+mc_dropout,MC Dropout,reference,-,-,-,-,-,-,-,-
+kl_pn,KL-PN,reference,-,-,-,-,-,-,-,-
+rkl_pn,RKL-PN,reference,-,-,-,-,-,-,-,-
+postn,PostN,reference,-,-,-,-,-,-,-,-
+edl_paper,EDL,reference,-,-,-,-,-,-,-,-
+i_edl_paper,I-EDL,reference,-,-,-,-,-,-,-,-
