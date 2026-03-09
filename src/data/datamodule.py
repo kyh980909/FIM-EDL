@@ -31,15 +31,19 @@ class InfoEDLDataModule(pl.LightningDataModule):
         self._ood: Dict[str, DataLoader] = {}
 
     def setup(self, stage: str | None = None) -> None:
-        self._id = self.adapter.id_dataloaders(
-            batch_size=self.cfg.data.batch_size,
-            num_workers=self.cfg.data.num_workers,
-        )
-        self._ood = self.adapter.ood_dataloaders(
-            names=self.cfg.data.ood_list,
-            batch_size=self.cfg.data.batch_size,
-            num_workers=self.cfg.data.num_workers,
-        )
+        if not self._id:
+            self._id = self.adapter.id_dataloaders(
+                batch_size=self.cfg.data.batch_size,
+                num_workers=self.cfg.data.num_workers,
+            )
+
+        should_load_ood = stage in {None, "predict"}
+        if should_load_ood and not self._ood:
+            self._ood = self.adapter.ood_dataloaders(
+                names=self.cfg.data.ood_list,
+                batch_size=self.cfg.data.batch_size,
+                num_workers=self.cfg.data.num_workers,
+            )
 
     def train_dataloader(self) -> DataLoader:
         return self._id["train"]
