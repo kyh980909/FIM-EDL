@@ -17,6 +17,10 @@ from src.registry.validators import validate_registry_bindings
 from src.reporting.collector import LocalCollector
 
 
+def _maybe_loss_value(cfg: DictConfig, key: str):
+    return OmegaConf.select(cfg, f"loss.{key}", default=None)
+
+
 def _wandb_tags(cfg: DictConfig) -> list[str]:
     base = list(cfg.logging.wandb.tags)
     exp_tags = list(getattr(cfg.experiment, "wandb_tags", []))
@@ -53,16 +57,25 @@ def _build_logger(cfg: DictConfig):
                 "suite": str(cfg.experiment.suite),
                 "epochs": int(cfg.trainer.max_epochs),
                 "lr": float(cfg.optimizer.lr),
-                "beta": float(cfg.loss.beta),
-                "gamma": float(cfg.loss.gamma),
-                "lambda_kl": float(cfg.loss.lambda_kl),
-                "lambda_logdet": float(cfg.loss.lambda_logdet),
                 "num_classes": int(cfg.model.num_classes),
-                "info_type": str(cfg.loss.info_type),
-                "gate_type": str(cfg.loss.gate_type),
-                "detach_weight": bool(cfg.loss.detach_weight),
-                "objective": str(cfg.loss.objective),
             },
+            allow_val_change=True,
+        )
+        optional_loss_items = {
+            "beta": _maybe_loss_value(cfg, "beta"),
+            "gamma": _maybe_loss_value(cfg, "gamma"),
+            "lambda_value": _maybe_loss_value(cfg, "lambda_value"),
+            "lambda_kl": _maybe_loss_value(cfg, "lambda_kl"),
+            "lambda_logdet": _maybe_loss_value(cfg, "lambda_logdet"),
+            "fisher_c": _maybe_loss_value(cfg, "fisher_c"),
+            "kl_anneal_epochs": _maybe_loss_value(cfg, "kl_anneal_epochs"),
+            "info_type": _maybe_loss_value(cfg, "info_type"),
+            "gate_type": _maybe_loss_value(cfg, "gate_type"),
+            "detach_weight": _maybe_loss_value(cfg, "detach_weight"),
+            "objective": _maybe_loss_value(cfg, "objective"),
+        }
+        logger.experiment.config.update(
+            {k: v for k, v in optional_loss_items.items() if v is not None},
             allow_val_change=True,
         )
         return logger

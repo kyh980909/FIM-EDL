@@ -1,5 +1,5 @@
 {
-  "rows": 30,
+  "rows": 78,
   "outputs": [
     "results/eval/latest_eval_rows.csv",
     "results/eval/summary_mean_std.csv",

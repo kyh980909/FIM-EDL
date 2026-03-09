@@ -33,6 +33,25 @@ from src.registry.losses import LOSS_REGISTRY
 from src.registry.scores import SCORE_REGISTRY
 
 
+def _loss_kwargs(cfg) -> Dict[str, Any]:
+    loss_name = str(cfg.loss.name)
+    if loss_name == "edl_fixed":
+        return {"lam": cfg.loss.lambda_value}
+    if loss_name == "iedl_ref":
+        return {
+            "lambda_kl": cfg.loss.lambda_kl,
+            "fisher_c": cfg.loss.fisher_c,
+            "kl_anneal_epochs": cfg.loss.kl_anneal_epochs,
+            "lambda_logdet": cfg.loss.lambda_logdet,
+        }
+    if loss_name == "info_edl":
+        return {
+            "beta": cfg.loss.beta,
+            "gamma": cfg.loss.gamma,
+        }
+    raise ValueError(f"Unsupported loss.name: {loss_name}")
+
+
 class InfoEDLLightningModule(pl.LightningModule):
     def __init__(self, cfg) -> None:
         super().__init__()
@@ -54,17 +73,7 @@ class InfoEDLLightningModule(pl.LightningModule):
         assert_module_instance(self.head, HeadProtocol, "head")
 
         loss_cls = LOSS_REGISTRY.get(cfg.loss.name)
-        if cfg.loss.name == "edl_fixed":
-            self.loss_fn: nn.Module = loss_cls(lam=cfg.loss.lambda_value)
-        elif cfg.loss.name == "iedl_ref":
-            self.loss_fn = loss_cls(
-                lambda_kl=cfg.loss.lambda_kl,
-                fisher_c=cfg.loss.fisher_c,
-                kl_anneal_epochs=cfg.loss.kl_anneal_epochs,
-                lambda_logdet=cfg.loss.lambda_logdet,
-            )
-        else:
-            self.loss_fn = loss_cls(beta=cfg.loss.beta, gamma=cfg.loss.gamma)
+        self.loss_fn = loss_cls(**_loss_kwargs(cfg))
         assert_module_instance(self.loss_fn, LossProtocol, "loss")
 
         self.score_fn = SCORE_REGISTRY.get(cfg.score.name)
