@@ -60,9 +60,10 @@ class MNISTAdapter(DatasetAdapter):
         eval_tf = self._eval_tf()
         out: Dict[str, DataLoader] = {}
         for name in names:
-            if name == "kmnist":
+            dataset_name = str(name).lower()
+            if dataset_name == "kmnist":
                 ds = datasets.KMNIST(self.root, train=False, download=True, transform=eval_tf)
-            elif name == "fashionmnist":
+            elif dataset_name in {"fashionmnist", "fmnist"}:
                 ds = datasets.FashionMNIST(self.root, train=False, download=True, transform=eval_tf)
             else:
                 raise ValueError(f"Unsupported OOD dataset for MNIST ID: {name}")

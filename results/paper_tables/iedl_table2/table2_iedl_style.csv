@@ -1,0 +1,12 @@
+method_key,display_name,source,mnist_to_kmnist_maxp,mnist_to_kmnist_alpha0,mnist_to_fmnist_maxp,mnist_to_fmnist_alpha0,cifar10_to_svhn_maxp,cifar10_to_svhn_alpha0,cifar10_to_cifar100_maxp,cifar10_to_cifar100_alpha0
+mc_dropout,MC Dropout,reference,-,-,-,-,-,-,-,-
+kl_pn,KL-PN,reference,-,-,-,-,-,-,-,-
+rkl_pn,RKL-PN,reference,-,-,-,-,-,-,-,-
+postn,PostN,reference,-,-,-,-,-,-,-,-
+edl_paper,EDL,reference,-,-,-,-,-,-,-,-
+i_edl_paper,I-EDL,reference,-,-,-,-,-,-,-,-
+edl_l1,EDL (lambda=1.0),project,-,-,-,-,89.84 +/- 0.88,80.78 +/- 0.27,74.73 +/- 0.00,61.33 +/- 0.24
+edl_l01,EDL (lambda=0.1),project,-,-,-,-,91.62 +/- 0.72,91.36 +/- 0.73,78.12 +/- 0.14,77.76 +/- 0.28
+edl_l0001,EDL (lambda=0.001),project,-,-,-,-,92.08 +/- 1.91,92.38 +/- 2.38,80.49 +/- 0.43,82.19 +/- 0.68
+iedl_ref,I-EDL Ref,project,-,-,-,-,93.81 +/- 0.84,93.72 +/- 0.78,82.37 +/- 0.01,82.30 +/- 0.07
+info_edl,Info-EDL,project,-,-,-,-,94.45 +/- 0.53,96.45 +/- 0.02,81.84 +/- 0.05,85.65 +/- 0.05

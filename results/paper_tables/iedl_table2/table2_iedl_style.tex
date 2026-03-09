@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{AUPR scores of OOD detection (mean $\pm$ standard deviation).}
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{2}{c}{MNIST $\rightarrow$ KMNIST} & \multicolumn{2}{c}{MNIST $\rightarrow$ FMNIST} & \multicolumn{2}{c}{CIFAR10 $\rightarrow$ SVHN} & \multicolumn{2}{c}{CIFAR10 $\rightarrow$ CIFAR100} \\
+Method & Max.P & $\alpha_0$ & Max.P & $\alpha_0$ & Max.P & $\alpha_0$ & Max.P & $\alpha_0$ \\
+\midrule
+MC Dropout & - & - & - & - & - & - & - & - \\
+KL-PN & - & - & - & - & - & - & - & - \\
+RKL-PN & - & - & - & - & - & - & - & - \\
+PostN & - & - & - & - & - & - & - & - \\
+EDL & - & - & - & - & - & - & - & - \\
+I-EDL & - & - & - & - & - & - & - & - \\
+EDL (lambda=1.0) & - & - & - & - & 89.84 +/- 0.88 & 80.78 +/- 0.27 & 74.73 +/- 0.00 & 61.33 +/- 0.24 \\
+EDL (lambda=0.1) & - & - & - & - & 91.62 +/- 0.72 & 91.36 +/- 0.73 & 78.12 +/- 0.14 & 77.76 +/- 0.28 \\
+EDL (lambda=0.001) & - & - & - & - & 92.08 +/- 1.91 & 92.38 +/- 2.38 & 80.49 +/- 0.43 & 82.19 +/- 0.68 \\
+I-EDL Ref & - & - & - & - & 93.81 +/- 0.84 & 93.72 +/- 0.78 & 82.37 +/- 0.01 & 82.30 +/- 0.07 \\
+Info-EDL & - & - & - & - & 94.45 +/- 0.53 & 96.45 +/- 0.02 & 81.84 +/- 0.05 & 85.65 +/- 0.05 \\
+\bottomrule
+\end{tabular}
+\end{table}

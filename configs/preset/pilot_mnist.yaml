@@ -4,5 +4,5 @@ run_eval: true
 build_artifacts: true
 overrides:
   - data.id=mnist
-  - data.ood_list=[kmnist,fashionmnist]
+  - data.ood_list=[kmnist,fmnist]
   - experiment.suite=mnist_ood

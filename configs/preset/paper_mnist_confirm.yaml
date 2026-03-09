@@ -6,4 +6,4 @@ overrides:
   - experiment.suite=mnist_paper
   - model.backbone=convnet
   - data.id=mnist
-  - data.ood_list=[kmnist,fashionmnist]
+  - data.ood_list=[kmnist,fmnist]
