@@ -14,3 +14,4 @@ loss:
   gate_type: exp
   detach_weight: false
   objective: risk_plus_kl
+  anneal_epochs: 10

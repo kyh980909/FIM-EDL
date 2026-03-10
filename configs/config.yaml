@@ -36,6 +36,8 @@ data:
   ood_list: [svhn, cifar100]
   batch_size: 128
   num_workers: 2
+  val_from_train: false
+  val_split: 0.0
 
 fewshot:
   enabled: false
@@ -60,6 +62,10 @@ trainer:
   devices: 1
   precision: 16-mixed
   log_every_n_steps: 50
+  early_stopping: false
+  early_stopping_monitor: val/loss
+  early_stopping_mode: min
+  early_stopping_patience: 20
 
 logging:
   backend: wandb

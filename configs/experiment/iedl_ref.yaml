@@ -12,3 +12,4 @@ loss:
   lambda_logdet: 0.05
   fisher_c: 0.05
   kl_anneal_epochs: 10
+  anneal_epochs: 10

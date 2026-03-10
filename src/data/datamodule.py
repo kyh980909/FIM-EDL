@@ -11,12 +11,24 @@ from src.data.adapters.miniimagenet_adapter import MiniImageNetAdapter
 from src.data.adapters.mnist_adapter import MNISTAdapter
 
 
-def _build_adapter(id_name: str, root: str) -> DatasetAdapter:
+def _build_adapter(cfg) -> DatasetAdapter:
+    id_name = cfg.data.id
+    root = cfg.data.root
     name = str(id_name).lower()
     if name == "cifar10":
-        return CIFAR10Adapter(root=root)
+        return CIFAR10Adapter(
+            root=root,
+            val_from_train=bool(cfg.data.val_from_train),
+            val_split=float(cfg.data.val_split),
+            seed=int(cfg.seed),
+        )
     if name == "mnist":
-        return MNISTAdapter(root=root)
+        return MNISTAdapter(
+            root=root,
+            val_from_train=bool(cfg.data.val_from_train),
+            val_split=float(cfg.data.val_split),
+            seed=int(cfg.seed),
+        )
     if name in {"miniimagenet", "mini-imagenet"}:
         return MiniImageNetAdapter(root=root)
     raise ValueError(f"Unsupported data.id: {id_name}. Supported: cifar10, mnist, miniimagenet")
@@ -26,7 +38,7 @@ class InfoEDLDataModule(pl.LightningDataModule):
     def __init__(self, cfg) -> None:
         super().__init__()
         self.cfg = cfg
-        self.adapter = _build_adapter(id_name=cfg.data.id, root=cfg.data.root)
+        self.adapter = _build_adapter(cfg)
         self._id: Dict[str, DataLoader] = {}
         self._ood: Dict[str, DataLoader] = {}
 

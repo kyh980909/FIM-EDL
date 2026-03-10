@@ -8,7 +8,7 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.dictconfig import DictConfig as OmegaDictConfig
 from omegaconf.listconfig import ListConfig as OmegaListConfig
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger, WandbLogger
 
 from src.data.datamodule import InfoEDLDataModule
@@ -98,13 +98,24 @@ def main(cfg: DictConfig) -> None:
     datamodule = InfoEDLDataModule(cfg)
     model = InfoEDLLightningModule(cfg)
 
+    monitor = str(cfg.trainer.early_stopping_monitor) if bool(cfg.trainer.early_stopping) else "val/acc"
+    mode = str(cfg.trainer.early_stopping_mode) if bool(cfg.trainer.early_stopping) else "max"
     ckpt = ModelCheckpoint(
         dirpath=str(Path(collector.run_dir) / "checkpoints"),
         save_top_k=1,
-        monitor="val/acc",
-        mode="max",
+        monitor=monitor,
+        mode=mode,
         filename="best",
     )
+    callbacks = [ckpt]
+    if bool(cfg.trainer.early_stopping):
+        callbacks.append(
+            EarlyStopping(
+                monitor=str(cfg.trainer.early_stopping_monitor),
+                mode=str(cfg.trainer.early_stopping_mode),
+                patience=int(cfg.trainer.early_stopping_patience),
+            )
+        )
 
     trainer = pl.Trainer(
         max_epochs=cfg.trainer.max_epochs,
@@ -113,7 +124,7 @@ def main(cfg: DictConfig) -> None:
         precision=cfg.trainer.precision,
         log_every_n_steps=cfg.trainer.log_every_n_steps,
         logger=_build_logger(cfg),
-        callbacks=[ckpt],
+        callbacks=callbacks,
         deterministic=True,
     )
 
