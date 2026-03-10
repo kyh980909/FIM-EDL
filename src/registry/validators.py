@@ -10,8 +10,8 @@ from src.registry.scores import SCORE_REGISTRY
 
 LOSS_ALLOWED_KEYS = {
     "edl_fixed": {"name", "lambda_value", "anneal_epochs"},
-    "info_edl": {"name", "beta", "gamma", "info_type", "gate_type", "detach_weight", "objective"},
-    "iedl_ref": {"name", "lambda_kl", "lambda_logdet", "fisher_c", "kl_anneal_epochs"},
+    "info_edl": {"name", "beta", "gamma", "info_type", "gate_type", "detach_weight", "objective", "anneal_epochs"},
+    "iedl_ref": {"name", "lambda_kl", "lambda_logdet", "fisher_c", "kl_anneal_epochs", "anneal_epochs"},
 }
 
 LOSS_REQUIRED_KEYS = {

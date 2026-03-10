@@ -56,7 +56,9 @@ class EDLFixedLoss(nn.Module):
         epoch = float(kwargs.get("epoch", 0.0))
         lam = self._lambda_weight(epoch)
         fit = _edl_fit(alpha, target)
-        reg = _kl_dirichlet_to_uniform(alpha)
+        y = F.one_hot(target, num_classes=alpha.size(1)).float()
+        alpha_hat = alpha * (1.0 - y) + y
+        reg = _kl_dirichlet_to_uniform(alpha_hat)
         total = fit + lam * reg
         return {
             "total": total,

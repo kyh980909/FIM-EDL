@@ -17,7 +17,7 @@ class LocalCollector:
     def __init__(self, cfg) -> None:
         method = cfg.experiment.name
         seed = cfg.seed
-        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         self.run_dir = Path(cfg.logging.local_dir) / method / f"seed_{seed}" / ts
         self.run_dir.mkdir(parents=True, exist_ok=True)
         self.metrics_path = self.run_dir / "metrics.jsonl"
