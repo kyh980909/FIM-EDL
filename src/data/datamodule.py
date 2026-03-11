@@ -31,6 +31,10 @@ def _build_adapter(cfg) -> DatasetAdapter:
             val_from_train=bool(cfg.data.val_from_train),
             val_split=float(cfg.data.val_split),
             seed=int(cfg.seed),
+            normalize=bool(cfg.data.normalize),
+            image_size=int(cfg.data.image_size),
+            grayscale_to_rgb=bool(cfg.data.grayscale_to_rgb),
+            random_crop_padding=int(cfg.data.random_crop_padding),
         )
     if name in {"miniimagenet", "mini-imagenet"}:
         return MiniImageNetAdapter(root=root)

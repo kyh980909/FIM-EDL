@@ -41,6 +41,9 @@ data:
   normalize: true
   random_rotation_degrees: 0.0
   val_use_train_transform: false
+  image_size: 32
+  grayscale_to_rgb: true
+  random_crop_padding: 2
 
 fewshot:
   enabled: false

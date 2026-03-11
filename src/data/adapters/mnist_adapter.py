@@ -16,12 +16,19 @@ class MNISTAdapter(DatasetAdapter):
         val_from_train: bool = False,
         val_split: float = 0.0,
         seed: int = 0,
+        normalize: bool = True,
+        image_size: int = 32,
+        grayscale_to_rgb: bool = True,
+        random_crop_padding: int = 2,
     ) -> None:
         self.root = root
         self.val_from_train = bool(val_from_train)
         self.val_split = float(val_split)
         self.seed = int(seed)
-        # Convert grayscale to 3-channel for ResNet-style backbones.
+        self.normalize = bool(normalize)
+        self.image_size = int(image_size)
+        self.grayscale_to_rgb = bool(grayscale_to_rgb)
+        self.random_crop_padding = int(random_crop_padding)
         self._norm = NormalizationSpec(
             mean=(0.1307, 0.1307, 0.1307), std=(0.3081, 0.3081, 0.3081)
         )
@@ -36,25 +43,32 @@ class MNISTAdapter(DatasetAdapter):
         return self._norm
 
     def _train_tf(self) -> transforms.Compose:
-        return transforms.Compose(
-            [
-                transforms.Resize((32, 32)),
-                transforms.Grayscale(num_output_channels=3),
-                transforms.RandomCrop(32, padding=2),
-                transforms.ToTensor(),
-                transforms.Normalize(self._norm.mean, self._norm.std),
-            ]
-        )
+        tf = []
+        if self.image_size != 28:
+            tf.append(transforms.Resize((self.image_size, self.image_size)))
+        if self.grayscale_to_rgb:
+            tf.append(transforms.Grayscale(num_output_channels=3))
+        if self.random_crop_padding > 0:
+            tf.append(transforms.RandomCrop(self.image_size, padding=self.random_crop_padding))
+        tf.append(transforms.ToTensor())
+        if self.normalize:
+            mean = self._norm.mean if self.grayscale_to_rgb else (self._norm.mean[0],)
+            std = self._norm.std if self.grayscale_to_rgb else (self._norm.std[0],)
+            tf.append(transforms.Normalize(mean, std))
+        return transforms.Compose(tf)
 
     def _eval_tf(self) -> transforms.Compose:
-        return transforms.Compose(
-            [
-                transforms.Resize((32, 32)),
-                transforms.Grayscale(num_output_channels=3),
-                transforms.ToTensor(),
-                transforms.Normalize(self._norm.mean, self._norm.std),
-            ]
-        )
+        tf = []
+        if self.image_size != 28:
+            tf.append(transforms.Resize((self.image_size, self.image_size)))
+        if self.grayscale_to_rgb:
+            tf.append(transforms.Grayscale(num_output_channels=3))
+        tf.append(transforms.ToTensor())
+        if self.normalize:
+            mean = self._norm.mean if self.grayscale_to_rgb else (self._norm.mean[0],)
+            std = self._norm.std if self.grayscale_to_rgb else (self._norm.std[0],)
+            tf.append(transforms.Normalize(mean, std))
+        return transforms.Compose(tf)
 
     def _split_indices(self, n_samples: int) -> tuple[list[int], list[int]]:
         val_size = int(round(n_samples * self.val_split))

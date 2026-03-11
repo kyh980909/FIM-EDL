@@ -1,0 +1,29 @@
+methods: [iedl_ref]
+seeds: [0, 1, 2, 3, 4]
+run_eval: true
+build_artifacts: false
+overrides:
+  - experiment.suite=mnist_paper_ref
+  - model.backbone=convnet_mnist_official
+  - data.id=mnist
+  - data.ood_list=[kmnist,fmnist]
+  - model.num_classes=10
+  - trainer.max_epochs=200
+  - data.batch_size=64
+  - data.val_from_train=true
+  - data.val_split=0.2
+  - data.image_size=28
+  - data.grayscale_to_rgb=false
+  - data.random_crop_padding=0
+  - data.normalize=false
+  - optimizer.lr=0.001
+  - loss.fisher_c=0.005
+  - loss.kl_anneal_epochs=10
+  - trainer.precision=32-true
+  - trainer.early_stopping=true
+  - trainer.early_stopping_monitor=val/acc
+  - trainer.early_stopping_mode=max
+  - trainer.early_stopping_patience=10
+  - eval.confidence_scores=[maxp,maxalpha]
+  - logging.backend=wandb
+  - logging.wandb.project=FI-EDL-MNIST
