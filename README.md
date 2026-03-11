@@ -5,8 +5,15 @@ Hydra + PyTorch Lightning 기반 Info-EDL 재현/확장 플랫폼입니다.
 ## Quick Start
 
 ```bash
-pip install -e .
+uv sync --extra dev
+source .venv/bin/activate
 python run.py preset quick_smoke
+```
+
+If you need a legacy editable install instead of `uv`, use:
+
+```bash
+pip install -e ".[dev]"
 ```
 
 ## Hyperparameter Baseline
