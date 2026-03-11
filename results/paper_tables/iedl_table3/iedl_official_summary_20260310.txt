@@ -1,0 +1,18 @@
+Subject: CIFAR-10 I-EDL rerun summary
+
+CIFAR-10 I-EDL official-style rerun has completed.
+
+Latest I-EDL summary:
+- SVHN OOD AUPR (Max.P): 92.47 +/- 1.29
+- SVHN OOD AUPR (alpha0): 91.48 +/- 0.93
+- CIFAR100 OOD AUPR (Max.P): 79.73 +/- 0.91
+- CIFAR100 OOD AUPR (alpha0): 75.54 +/- 1.49
+
+Reference comparison inside current project:
+- Info-EDL SVHN alpha0 AUPR: 95.93 +/- 1.02
+- Info-EDL CIFAR100 alpha0 AUPR: 84.04 +/- 0.26
+
+Updated tables:
+- /home/yongho/FIM-EDL/results/paper_tables/iedl_table2/table2_iedl_style.md
+- /home/yongho/FIM-EDL/results/paper_tables/iedl_table3/table3_iedl_style.md
+- /home/yongho/FIM-EDL/results/eval/summary_mean_std.csv

@@ -1,0 +1,27 @@
+methods: [iedl_ref]
+seeds: [0, 1, 2, 3, 4]
+run_eval: true
+build_artifacts: false
+overrides:
+  - experiment.suite=cifar10_paper_ref
+  - model.backbone=vgg16
+  - data.id=cifar10
+  - data.ood_list=[svhn,cifar100]
+  - model.num_classes=10
+  - trainer.max_epochs=200
+  - loss.kl_anneal_epochs=10
+  - data.batch_size=64
+  - data.val_from_train=true
+  - data.val_split=0.05
+  - data.normalize=false
+  - data.random_rotation_degrees=15
+  - data.val_use_train_transform=true
+  - optimizer.lr=0.0005
+  - trainer.precision=32-true
+  - trainer.early_stopping=true
+  - trainer.early_stopping_monitor=val/acc
+  - trainer.early_stopping_mode=max
+  - trainer.early_stopping_patience=10
+  - eval.confidence_scores=[maxp,maxalpha]
+  - logging.backend=csv
+  - logging.wandb.project=FI-EDL-CIFAR10

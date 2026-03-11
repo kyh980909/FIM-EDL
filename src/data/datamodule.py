@@ -21,6 +21,9 @@ def _build_adapter(cfg) -> DatasetAdapter:
             val_from_train=bool(cfg.data.val_from_train),
             val_split=float(cfg.data.val_split),
             seed=int(cfg.seed),
+            normalize=bool(cfg.data.normalize),
+            random_rotation_degrees=float(cfg.data.random_rotation_degrees),
+            val_use_train_transform=bool(cfg.data.val_use_train_transform),
         )
     if name == "mnist":
         return MNISTAdapter(

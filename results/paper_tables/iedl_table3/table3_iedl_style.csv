@@ -1,0 +1,9 @@
+method_key,display_name,source,maxp_aupr,maxalpha_aupr,accuracy
+mc_dropout,MC Dropout,reference,97.15 +/- 0.00,-,82.84 +/- 0.10
+kl_pn,KL-PN,reference,50.61 +/- 4.00,52.49 +/- 4.20,27.46 +/- 1.70
+rkl_pn,RKL-PN,reference,86.11 +/- 0.40,85.59 +/- 0.30,64.76 +/- 0.30
+postn,PostN,reference,97.76 +/- 0.00,97.25 +/- 0.00,84.85 +/- 0.00
+edl_paper,EDL,reference,97.86 +/- 0.20,97.86 +/- 0.20,83.55 +/- 0.60
+iedl_paper,I-EDL,reference,98.72 +/- 0.10,98.63 +/- 0.10,89.20 +/- 0.30
+iedl_ref,I-EDL Ref,project,98.71 +/- 0.10,98.71 +/- 0.10,89.66 +/- 0.81
+info_edl,Info-EDL,project,98.78 +/- 0.08,98.75 +/- 0.10,90.41 +/- 0.35

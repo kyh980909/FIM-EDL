@@ -16,11 +16,17 @@ class CIFAR10Adapter(DatasetAdapter):
         val_from_train: bool = False,
         val_split: float = 0.0,
         seed: int = 0,
+        normalize: bool = True,
+        random_rotation_degrees: float = 0.0,
+        val_use_train_transform: bool = False,
     ) -> None:
         self.root = root
         self.val_from_train = bool(val_from_train)
         self.val_split = float(val_split)
         self.seed = int(seed)
+        self.normalize = bool(normalize)
+        self.random_rotation_degrees = float(random_rotation_degrees)
+        self.val_use_train_transform = bool(val_use_train_transform)
         self._norm = NormalizationSpec(
             mean=(0.4914, 0.4822, 0.4465), std=(0.2470, 0.2435, 0.2616)
         )
@@ -35,19 +41,22 @@ class CIFAR10Adapter(DatasetAdapter):
         return self._norm
 
     def _train_tf(self) -> transforms.Compose:
-        return transforms.Compose(
-            [
-                transforms.RandomCrop(32, padding=4),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor(),
-                transforms.Normalize(self._norm.mean, self._norm.std),
-            ]
-        )
+        items: list[transforms.Transform] = [
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomCrop(32, padding=4),
+        ]
+        if self.random_rotation_degrees > 0.0:
+            items.append(transforms.RandomRotation(degrees=self.random_rotation_degrees))
+        items.append(transforms.ToTensor())
+        if self.normalize:
+            items.append(transforms.Normalize(self._norm.mean, self._norm.std))
+        return transforms.Compose(items)
 
     def _eval_tf(self) -> transforms.Compose:
-        return transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize(self._norm.mean, self._norm.std)]
-        )
+        items: list[transforms.Transform] = [transforms.ToTensor()]
+        if self.normalize:
+            items.append(transforms.Normalize(self._norm.mean, self._norm.std))
+        return transforms.Compose(items)
 
     def _split_indices(self, n_samples: int) -> tuple[list[int], list[int]]:
         val_size = int(round(n_samples * self.val_split))
@@ -62,7 +71,8 @@ class CIFAR10Adapter(DatasetAdapter):
     def id_dataloaders(self, batch_size: int, num_workers: int) -> Dict[str, DataLoader]:
         if self.val_from_train and self.val_split > 0.0:
             train_base = datasets.CIFAR10(self.root, train=True, download=True, transform=self._train_tf())
-            val_base = datasets.CIFAR10(self.root, train=True, download=True, transform=self._eval_tf())
+            val_tf = self._train_tf() if self.val_use_train_transform else self._eval_tf()
+            val_base = datasets.CIFAR10(self.root, train=True, download=True, transform=val_tf)
             train_idx, val_idx = self._split_indices(len(train_base))
             train_ds = Subset(train_base, train_idx)
             val_ds = Subset(val_base, val_idx)

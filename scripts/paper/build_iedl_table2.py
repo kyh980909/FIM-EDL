@@ -196,7 +196,7 @@ def main() -> None:
     parser.add_argument("--out-dir", default="results/paper_tables/iedl_table2")
     parser.add_argument(
         "--methods",
-        default="edl_l1,edl_l01,edl_l0001,iedl_ref,info_edl",
+        default="iedl_ref,info_edl",
         help="Comma-separated project methods to include.",
     )
     args = parser.parse_args()
