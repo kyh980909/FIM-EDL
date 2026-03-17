@@ -5,6 +5,8 @@ ROOT="/home/yongho/FIM-EDL"
 
 METHOD="${METHOD:-infoedl}"
 WAYS="${WAYS:-5}"
+INFO_BETA="${INFO_BETA:-1.0}"
+INFO_GAMMA="${INFO_GAMMA:-1.0}"
 TOTAL_TASKS="${TOTAL_TASKS:-10000}"
 CHUNK_SIZE="${CHUNK_SIZE:-1000}"
 BASE_CONFIG_ID="${BASE_CONFIG_ID:-${WAYS}w-${METHOD}-official-chunked}"
@@ -27,6 +29,8 @@ while [ "$task_start" -lt "$TOTAL_TASKS" ]; do
   env \
     METHOD="$METHOD" \
     WAYS="$WAYS" \
+    INFO_BETA="$INFO_BETA" \
+    INFO_GAMMA="$INFO_GAMMA" \
     TASKS="$chunk_tasks" \
     TASK_START="$task_start" \
     DUMP_PERIOD="$chunk_tasks" \

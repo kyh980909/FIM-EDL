@@ -1,0 +1,19 @@
+methods: [info_edl]
+seeds: [0]
+run_eval: false
+build_artifacts: false
+overrides:
+  - experiment.suite=fewshot_paper
+  - model.backbone=wrn28_10
+  - model.num_classes=100
+  - data.id=miniimagenet
+  - data.ood_list=[cub]
+  - data.batch_size=32
+  - data.num_workers=2
+  - trainer.max_epochs=100
+  - trainer.accelerator=gpu
+  - trainer.devices=1
+  - trainer.precision=32-true
+  - logging.backend=csv
+  - loss.beta=0.05
+  - loss.gamma=2.0

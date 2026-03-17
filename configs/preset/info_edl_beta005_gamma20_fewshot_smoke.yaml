@@ -1,0 +1,26 @@
+methods: [info_edl]
+seeds: [0]
+run_eval: true
+build_artifacts: true
+overrides:
+  - experiment.suite=fewshot_paper
+  - model.backbone=resnet18
+  - model.num_classes=100
+  - data.id=miniimagenet
+  - data.ood_list=[cub]
+  - data.batch_size=16
+  - data.num_workers=0
+  - trainer.max_epochs=1
+  - trainer.accelerator=cpu
+  - trainer.devices=1
+  - trainer.precision=32
+  - logging.backend=csv
+  - loss.beta=0.05
+  - loss.gamma=2.0
+  - fewshot.enabled=true
+  - fewshot.eval_split=test
+  - fewshot.way=5
+  - fewshot.shot=1
+  - fewshot.episodes=2
+  - fewshot.adapt_steps=2
+  - fewshot.adapt_lr=0.01

@@ -4,6 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+if [ -x "$ROOT_DIR/.venv/bin/python" ]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/bin/python"
+else
+  PYTHON_BIN="${PYTHON_BIN:-python}"
+fi
+
 CKPT_PATH="${CKPT_PATH:-/home/yongho/FIM-EDL/runs/info_edl/seed_0/20260317T062939546673Z/checkpoints/best.ckpt}"
 WAY="${WAY:-5}"
 SHOT="${SHOT:-1}"
@@ -26,7 +32,7 @@ mkdir -p "$(dirname "$LOG_PATH")"
   echo "[START] $(date -Iseconds)"
   echo "[INFO] checkpoint=$CKPT_PATH way=$WAY shot=$SHOT episodes=$EPISODES adapt_steps=$ADAPT_STEPS backbone=$BACKBONE"
 
-  uv run python -m src.eval_fewshot \
+  "$PYTHON_BIN" -m src.eval_fewshot \
     experiment=info_edl \
     seed=0 \
     checkpoint="$CKPT_PATH" \
@@ -50,6 +56,6 @@ mkdir -p "$(dirname "$LOG_PATH")"
     fewshot.adapt_steps="$ADAPT_STEPS" \
     fewshot.adapt_lr="$ADAPT_LR"
 
-  uv run python scripts/paper/export_fewshot_results.py --runs runs --out results/fewshot
+  "$PYTHON_BIN" scripts/paper/export_fewshot_results.py --runs runs --out results/fewshot
   echo "[DONE] $(date -Iseconds)"
 } >> "$LOG_PATH" 2>&1

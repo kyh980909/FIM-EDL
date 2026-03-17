@@ -1,0 +1,7 @@
+{
+  "rows": 20,
+  "outputs": [
+    "results/fewshot_beta005_gamma20/latest_fewshot_rows.csv",
+    "results/fewshot_beta005_gamma20/summary_mean_std.csv"
+  ]
+}

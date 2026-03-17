@@ -33,6 +33,8 @@ def main() -> None:
     parser.add_argument("--dump-period", type=int, default=10000)
     parser.add_argument("--torch-threads", type=int, default=1)
     parser.add_argument("--optimizer-name", default="adam", choices=["adam", "lbfgs"])
+    parser.add_argument("--info-beta", type=float, default=None)
+    parser.add_argument("--info-gamma", type=float, default=None)
     parser.add_argument("--lbfgs-lr", type=float, default=0.25)
     parser.add_argument("--lbfgs-line-search-fn", default="none", choices=["none", "strong_wolfe"])
     parser.add_argument("--adam-lr", type=float, default=1e-2)
@@ -56,6 +58,10 @@ def main() -> None:
     cfg["dump_period"] = args.dump_period
     cfg["torch_threads"] = args.torch_threads
     cfg["optimizer_name"] = args.optimizer_name
+    if args.info_beta is not None:
+        cfg["info_beta"] = args.info_beta
+    if args.info_gamma is not None:
+        cfg["info_gamma"] = args.info_gamma
     cfg["lbfgs_lr"] = args.lbfgs_lr
     cfg["lbfgs_line_search_fn"] = None if args.lbfgs_line_search_fn == "none" else args.lbfgs_line_search_fn
     cfg["adam_lr"] = args.adam_lr

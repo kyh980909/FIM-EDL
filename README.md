@@ -113,3 +113,7 @@ screen -dmS fs_5w5s env WAY=5 SHOT=5 EPISODES=200 LOG_PATH=outputs/logs/fs_5w5s.
 screen -ls
 tail -f outputs/logs/fs_5w1s.log
 ```
+
+For local long-running experiments, the shell launchers prefer
+`./.venv/bin/python` when it exists. This avoids `uv run` network/cache issues
+on offline machines while keeping `uv` as the package-management workflow.

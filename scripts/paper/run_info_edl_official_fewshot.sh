@@ -22,6 +22,8 @@ MKL_NUM_THREADS="${MKL_NUM_THREADS:-1}"
 OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
 NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-1}"
 OPTIMIZER_NAME="${OPTIMIZER_NAME:-adam}"
+INFO_BETA="${INFO_BETA:-1.0}"
+INFO_GAMMA="${INFO_GAMMA:-1.0}"
 LBFGS_LR="${LBFGS_LR:-0.25}"
 LBFGS_LINE_SEARCH_FN="${LBFGS_LINE_SEARCH_FN:-none}"
 ADAM_LR="${ADAM_LR:-0.01}"
@@ -50,6 +52,8 @@ export NUMEXPR_NUM_THREADS
   --dump-period "$DUMP_PERIOD" \
   --torch-threads "$TORCH_THREADS" \
   --optimizer-name "$OPTIMIZER_NAME" \
+  --info-beta "$INFO_BETA" \
+  --info-gamma "$INFO_GAMMA" \
   --lbfgs-lr "$LBFGS_LR" \
   --lbfgs-line-search-fn "$LBFGS_LINE_SEARCH_FN" \
   --adam-lr "$ADAM_LR" \
