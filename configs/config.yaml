@@ -16,6 +16,7 @@ model:
   head: edl
   num_classes: 10
   pretrained: false
+  backbone_checkpoint: ""
   evidence_fn: softplus
 
 loss:
@@ -51,6 +52,13 @@ fewshot:
   shot: 1
   episodes: 1000
   ood_dataset: cub
+  eval_split: test
+  query_per_class: -1
+  adapt_steps: 100
+  adapt_lr: 0.01
+  adapt_weight_decay: 0.0
+  adapt_batch_size: 0
+  paper_protocol_strict: false
 
 optimizer:
   name: adam

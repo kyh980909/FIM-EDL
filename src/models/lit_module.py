@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import time
 from typing import Any, Dict
 
@@ -62,7 +63,13 @@ class InfoEDLLightningModule(pl.LightningModule):
         self.cfg = cfg
 
         backbone_cls = BACKBONE_REGISTRY.get(cfg.model.backbone)
-        self.backbone: nn.Module = backbone_cls(pretrained=cfg.model.pretrained)
+        backbone_kwargs = {}
+        signature = inspect.signature(backbone_cls.__init__)
+        if "pretrained" in signature.parameters:
+            backbone_kwargs["pretrained"] = cfg.model.pretrained
+        if "checkpoint_path" in signature.parameters:
+            backbone_kwargs["checkpoint_path"] = str(getattr(cfg.model, "backbone_checkpoint", ""))
+        self.backbone: nn.Module = backbone_cls(**backbone_kwargs)
         assert_module_instance(self.backbone, BackboneProtocol, "backbone")
 
         head_cls = HEAD_REGISTRY.get(cfg.model.head)

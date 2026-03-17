@@ -65,6 +65,9 @@ class MiniImageNetAdapter(DatasetAdapter):
             raise FileNotFoundError(f"Dataset directory not found: {path}")
         return datasets.ImageFolder(path, transform=self._train_tf() if train else self._eval_tf())
 
+    def imagefolder_dataset(self, rel: str, train: bool = False):
+        return self._imagefolder(rel=rel, train=train)
+
     def id_dataloaders(self, batch_size: int, num_workers: int) -> Dict[str, DataLoader]:
         train_ds = self._imagefolder("miniimagenet/train", train=True)
         val_ds = self._imagefolder("miniimagenet/val", train=False)

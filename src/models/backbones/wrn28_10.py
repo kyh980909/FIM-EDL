@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
+
+import torch
 from torch import Tensor, nn
 
 from src.registry.backbones import BACKBONE_REGISTRY
@@ -67,11 +70,42 @@ class _WideResNet(nn.Module):
 class WRN28x10Backbone(nn.Module):
     """WideResNet-28-10 style backbone for few-shot setting."""
 
-    def __init__(self, pretrained: bool = False) -> None:
+    def __init__(self, pretrained: bool = False, checkpoint_path: str = "") -> None:
         super().__init__()
-        _ = pretrained  # No bundled pretrained checkpoint in repo.
         self.net = _WideResNet(depth=28, widen_factor=10, drop_rate=0.0)
         self.out_dim = self.net.out_dim
+        if checkpoint_path:
+            self._load_checkpoint(checkpoint_path)
+        elif pretrained:
+            raise ValueError(
+                "wrn28_10 pretrained=True requires model.backbone_checkpoint because the repo does not bundle the Yang et al. (2021) weights."
+            )
 
     def forward(self, x: Tensor) -> Tensor:
         return self.net(x)
+
+    def _load_checkpoint(self, checkpoint_path: str) -> None:
+        path = Path(checkpoint_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Backbone checkpoint not found: {path}")
+        payload = torch.load(path, map_location="cpu", weights_only=False)
+        state_dict = payload.get("state_dict", payload) if isinstance(payload, dict) else payload
+        cleaned = {}
+        for key, value in state_dict.items():
+            key = str(key)
+            if key.startswith("backbone.net."):
+                cleaned[key[len("backbone.net.") :]] = value
+            elif key.startswith("net."):
+                cleaned[key[len("net.") :]] = value
+            elif key.startswith("backbone."):
+                cleaned[key[len("backbone.") :]] = value
+            else:
+                cleaned[key] = value
+        missing, unexpected = self.net.load_state_dict(cleaned, strict=False)
+        if unexpected:
+            raise ValueError(f"Unexpected WRN checkpoint keys: {unexpected[:10]}")
+        if missing:
+            raise ValueError(
+                "WRN checkpoint is incomplete for the backbone. Missing keys start with: "
+                f"{missing[:10]}"
+            )

@@ -1,0 +1,11 @@
+method,metric_family,dataset,score_type,way,shot,accuracy_mean,accuracy_std,aupr_mean,aupr_std,auroc_mean,auroc_std,fpr95_mean,fpr95_std,n
+info_edl,confidence,miniimagenet,maxalpha,5,1,0.400000,0.000000,0.450000,0.000000,nan,nan,nan,nan,1
+info_edl,confidence,miniimagenet,maxp,5,1,0.400000,0.000000,0.366667,0.000000,nan,nan,nan,nan,1
+info_edl,confidence,miniimagenet,maxalpha,5,5,0.425800,0.000000,0.600134,0.000000,nan,nan,nan,nan,1
+info_edl,confidence,miniimagenet,maxp,5,5,0.425800,0.000000,0.598300,0.000000,nan,nan,nan,nan,1
+info_edl,ood,cub,alpha0,5,1,0.400000,0.000000,0.586667,0.000000,0.560000,0.000000,1.000000,0.000000,1
+info_edl,ood,cub,maxp,5,1,0.400000,0.000000,0.697778,0.000000,0.640000,0.000000,0.800000,0.000000,1
+info_edl,ood,cub,vacuity,5,1,0.400000,0.000000,0.586667,0.000000,0.560000,0.000000,1.000000,0.000000,1
+info_edl,ood,cub,alpha0,5,5,0.425800,0.000000,0.471803,0.000000,0.445832,0.000000,0.813400,0.000000,1
+info_edl,ood,cub,maxp,5,5,0.425800,0.000000,0.530602,0.000000,0.516952,0.000000,0.825000,0.000000,1
+info_edl,ood,cub,vacuity,5,5,0.425800,0.000000,0.471803,0.000000,0.445832,0.000000,0.813400,0.000000,1

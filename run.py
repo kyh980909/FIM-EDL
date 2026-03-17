@@ -22,6 +22,22 @@ def run_cmd(cmd: List[str]) -> None:
     subprocess.run(cmd, check=True)
 
 
+def _override_value(overrides: List[str], key: str) -> str | None:
+    value = None
+    prefix = f"{key}="
+    for item in overrides:
+        if item.startswith(prefix):
+            value = item[len(prefix) :]
+    return value
+
+
+def _is_truthy_yaml(value: str | None) -> bool:
+    if value is None:
+        return False
+    parsed = yaml.safe_load(value)
+    return bool(parsed)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Preset experiment runner")
     parser.add_argument("mode", choices=["preset"], help="Run mode")
@@ -34,6 +50,7 @@ def main() -> None:
     seeds = preset["seeds"]
     preset_overrides = list(preset.get("overrides", []))
     merged_overrides = preset_overrides + list(args.overrides)
+    run_fewshot_eval = _is_truthy_yaml(_override_value(merged_overrides, "fewshot.enabled"))
 
     for method in methods:
         for seed in seeds:
@@ -53,7 +70,7 @@ def main() -> None:
                 eval_cmd = [
                     sys.executable,
                     "-m",
-                    "src.eval",
+                    "src.eval_fewshot" if run_fewshot_eval else "src.eval",
                     f"experiment={method}",
                     f"seed={seed}",
                     f"checkpoint={ckpt}",
@@ -61,26 +78,38 @@ def main() -> None:
                 run_cmd(eval_cmd)
 
     if preset.get("build_artifacts", True):
-        run_cmd(
-            [
-                sys.executable,
-                "scripts/paper/export_eval_results.py",
-                "--runs",
-                "runs",
-                "--out",
-                "results/eval",
-            ]
-        )
-        run_cmd(
-            [
-                sys.executable,
-                "scripts/paper/build_paper_artifacts.py",
-                "--input",
-                "runs",
-                "--out",
-                "artifacts/paper",
-            ]
-        )
+        if run_fewshot_eval:
+            run_cmd(
+                [
+                    sys.executable,
+                    "scripts/paper/export_fewshot_results.py",
+                    "--runs",
+                    "runs",
+                    "--out",
+                    "results/fewshot",
+                ]
+            )
+        else:
+            run_cmd(
+                [
+                    sys.executable,
+                    "scripts/paper/export_eval_results.py",
+                    "--runs",
+                    "runs",
+                    "--out",
+                    "results/eval",
+                ]
+            )
+            run_cmd(
+                [
+                    sys.executable,
+                    "scripts/paper/build_paper_artifacts.py",
+                    "--input",
+                    "runs",
+                    "--out",
+                    "artifacts/paper",
+                ]
+            )
 
 
 if __name__ == "__main__":

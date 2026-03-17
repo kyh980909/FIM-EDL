@@ -22,10 +22,13 @@ dependencies = [
   "wandb>=0.17"
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-  "pytest>=8.0"
+  "pytest>=8.0",
 ]
+
+[tool.uv]
+package = true
 
 [tool.setuptools]
 package-dir = {"" = "."}

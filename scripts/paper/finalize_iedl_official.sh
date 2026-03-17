@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="/home/yongho/FIM-EDL"
-PY="/home/yongho/miniconda3/envs/fedl/bin/python"
+UV="uv run python"
 LOG="$ROOT/outputs/logs/table23_cifar_iedl_official_finalize_20260310.log"
 SUMMARY_TXT="$ROOT/results/paper_tables/iedl_table3/iedl_official_summary_20260310.txt"
 
@@ -12,18 +12,18 @@ while pgrep -f "run.py preset paper_iedl_cifar_ref_iedl_official|src.train exper
   sleep 60
 done
 
-"$PY" scripts/paper/export_eval_results.py --runs runs --out results/eval >>"$LOG" 2>&1
-"$PY" scripts/paper/build_iedl_table2.py \
+$UV scripts/paper/export_eval_results.py --runs runs --out results/eval >>"$LOG" 2>&1
+$UV scripts/paper/build_iedl_table2.py \
   --summary-csv results/eval/summary_mean_std.csv \
   --reference-csv configs/paper/iedl_table2_reference_template.csv \
   --out-dir results/paper_tables/iedl_table2 >>"$LOG" 2>&1
-"$PY" scripts/paper/build_iedl_table3.py \
+$UV scripts/paper/build_iedl_table3.py \
   --runs runs \
   --dataset cifar10 \
   --reference-csv configs/paper/iedl_table3_reference_template.csv \
   --out-dir results/paper_tables/iedl_table3 >>"$LOG" 2>&1
 
-python3 - <<'PY' >"$SUMMARY_TXT"
+uv run python - <<'PY' >"$SUMMARY_TXT"
 import csv
 from pathlib import Path
 
