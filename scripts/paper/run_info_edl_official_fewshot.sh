@@ -2,8 +2,14 @@
 set -euo pipefail
 
 ROOT="/home/yongho/FIM-EDL"
-OFFICIAL_ROOT="${OFFICIAL_ROOT:-/tmp/IEDL_official/code_fsl}"
-PYTHON_BIN="${PYTHON_BIN:-/home/yongho/miniconda3/envs/fedl/bin/python}"
+OFFICIAL_ROOT="${OFFICIAL_ROOT:-$ROOT/external/iedl_official/code_fsl}"
+if [ -x "$ROOT/.venv/bin/python" ]; then
+  PYTHON_BIN="${PYTHON_BIN:-$ROOT/.venv/bin/python}"
+elif command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="${PYTHON_BIN:-python3}"
+else
+  PYTHON_BIN="${PYTHON_BIN:-python}"
+fi
 
 METHOD="${METHOD:-infoedl}"
 WAYS="${WAYS:-5}"

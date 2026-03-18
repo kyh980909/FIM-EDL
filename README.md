@@ -117,3 +117,25 @@ tail -f outputs/logs/fs_5w1s.log
 For local long-running experiments, the shell launchers prefer
 `./.venv/bin/python` when it exists. This avoids `uv run` network/cache issues
 on offline machines while keeping `uv` as the package-management workflow.
+
+## Vendored Official Few-Shot Code
+
+The paper-aligned few-shot runner is vendored inside this repo:
+- `external/iedl_official/code_fsl`
+
+This keeps the experiment code inside `FIM-EDL` rather than depending on
+`/tmp/IEDL_official`. The bundled subset includes:
+- official few-shot runner code
+- official `1_mini` JSON configs
+- `WideResNet28_10_S2M2_R` feature files needed for mini-ImageNet/CUB runs
+
+The official launcher defaults to that internal path, so these commands work
+without any `/tmp` clone:
+
+```bash
+screen -dmS infoedl_5w_official \
+  env METHOD=infoedl WAYS=5 TASKS=10000 TORCH_THREADS=1 \
+  LOG_PATH=outputs/logs/infoedl_5w_official.log \
+  RESULTS_DIR=results/fewshot_official/raw \
+  bash scripts/paper/run_info_edl_official_fewshot.sh
+```

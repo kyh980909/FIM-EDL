@@ -75,6 +75,10 @@ Current gaps versus the exact `ref.pdf` setup:
 The paper-aligned rerun path uses the official `code_fsl` implementation with the
 released `WideResNet28_10_S2M2_R` feature bundle.
 
+The required official few-shot code is vendored in this repo under:
+
+- `external/iedl_official/code_fsl`
+
 Launch a 5-way Info-EDL rerun:
 
 ```bash
