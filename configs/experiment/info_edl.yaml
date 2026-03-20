@@ -12,6 +12,6 @@ loss:
   gamma: 1.0
   info_type: fisher
   gate_type: exp
-  detach_weight: false
+  detach_weight: true
   objective: risk_plus_kl
   anneal_epochs: 10

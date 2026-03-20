@@ -1,0 +1,7 @@
+{
+  "rows": 672,
+  "outputs": [
+    "results/additional_experiments/latest_rows.csv",
+    "results/additional_experiments/summary_mean_std.csv"
+  ]
+}

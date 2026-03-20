@@ -88,8 +88,7 @@ def _enable_checkpoint_safe_globals() -> None:
         torch.serialization.add_safe_globals([OmegaDictConfig, OmegaListConfig])
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="config")
-def main(cfg: DictConfig) -> None:
+def run_train(cfg: DictConfig) -> None:
     pl.seed_everything(cfg.seed, workers=True)
     _enable_checkpoint_safe_globals()
     validate_registry_bindings(cfg)
@@ -118,11 +117,13 @@ def main(cfg: DictConfig) -> None:
         )
 
     trainer = pl.Trainer(
-        max_epochs=cfg.trainer.max_epochs,
-        accelerator=cfg.trainer.accelerator,
-        devices=cfg.trainer.devices,
-        precision=cfg.trainer.precision,
-        log_every_n_steps=cfg.trainer.log_every_n_steps,
+        max_epochs=int(cfg.trainer.max_epochs),
+        accelerator=str(cfg.trainer.accelerator),
+        devices=int(cfg.trainer.devices) if isinstance(cfg.trainer.devices, int) or str(cfg.trainer.devices).isdigit() else cfg.trainer.devices,
+        precision=str(cfg.trainer.precision),
+        log_every_n_steps=int(cfg.trainer.log_every_n_steps),
+        limit_train_batches=OmegaConf.select(cfg, "trainer.limit_train_batches", default=1.0),
+        limit_val_batches=OmegaConf.select(cfg, "trainer.limit_val_batches", default=1.0),
         logger=_build_logger(cfg),
         callbacks=callbacks,
         deterministic=True,
@@ -150,6 +151,11 @@ def main(cfg: DictConfig) -> None:
             "resolved_config": OmegaConf.to_container(cfg, resolve=True),
         }
     )
+
+
+@hydra.main(version_base=None, config_path="../configs", config_name="config")
+def main(cfg: DictConfig) -> None:
+    run_train(cfg)
 
 
 if __name__ == "__main__":

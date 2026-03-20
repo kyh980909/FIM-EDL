@@ -92,8 +92,7 @@ def _confidence_aupr(conf_scores: np.ndarray, correct: np.ndarray) -> float:
     return float(average_precision_score(labels, conf_scores))
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="config")
-def main(cfg: DictConfig) -> None:
+def run_eval(cfg: DictConfig) -> None:
     pl.seed_everything(cfg.seed, workers=True)
     _enable_checkpoint_safe_globals()
     collector = LocalCollector(cfg)
@@ -226,6 +225,11 @@ def main(cfg: DictConfig) -> None:
             "scores": list(cfg.eval.scores),
         }
     )
+
+
+@hydra.main(version_base=None, config_path="../configs", config_name="config")
+def main(cfg: DictConfig) -> None:
+    run_eval(cfg)
 
 
 if __name__ == "__main__":

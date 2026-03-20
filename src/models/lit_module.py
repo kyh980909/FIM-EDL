@@ -50,6 +50,9 @@ def _loss_kwargs(cfg) -> Dict[str, Any]:
         return {
             "beta": cfg.loss.beta,
             "gamma": cfg.loss.gamma,
+            "info_type": cfg.loss.info_type,
+            "gate_type": cfg.loss.gate_type,
+            "detach_weight": cfg.loss.detach_weight,
         }
     raise ValueError(f"Unsupported loss.name: {loss_name}")
 
